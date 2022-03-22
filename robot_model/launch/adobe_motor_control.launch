@@ -1,0 +1,16 @@
+<launch>
+    <!-- Load joint controller configuration from YAML file to parameter server -->
+    <rosparam file = "$(find robot_model)/config/adobe_control.yaml" command = "load"/>
+
+    <!-- load the controller  -->
+    <node name = "controller_spawner" pkg = "controller_manager" type = "spawner" respawn = "false"
+        output = "screen" ns = "/adobe" args = "joint_state_controller rw_joint_velocity_controller lw_joint_velocity_controller"/>
+
+    <!-- convert joint states to TF transforms for rviz, etc -->
+    <node name = "robot_state_publisher" pkg = "robot_state_publisher" type = "robot_state_publisher"
+    respawn = "false" output = "screen">
+        <remap  from = "/joint_states" to = "/adobe/joint_states"/>
+    </node>
+
+
+</launch>

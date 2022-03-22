@@ -1,0 +1,14 @@
+<launch>
+    <arg name = "model" default = ""/>
+    <param name = "robot_description" command = "cat $(arg model)"/>
+    <!--Send fake joint value-->
+    <node name = "joint_state_publisher" pkg = "joint_state_publisher" type = "joint_state_publisher">
+        <!--<param name = "use_gui" value = "TRUE"/>-->
+    </node>
+    <!--Combine joint value-->
+    <node name = "robot_state_publisher" pkg = "robot_state_publisher" type = "robot_state_publisher"/>
+
+    <!--Show in Rviz-->
+    <!-- <node name = "rviz" pkg = "rviz" type = "rviz" args = "" /> -->
+    <node name = "rviz" pkg = "rviz" type = "rviz" args = "-d $(find robot_model)/rviz_config/my_robot.rviz" />
+</launch>

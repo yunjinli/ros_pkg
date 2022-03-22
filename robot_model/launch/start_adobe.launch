@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+    <include file = "$(find robot_model)/launch/spawn_adobe.launch"/>
+    <include file = "$(find robot_model)/launch/adobe_motor_control.launch"/>
+    
+</launch>

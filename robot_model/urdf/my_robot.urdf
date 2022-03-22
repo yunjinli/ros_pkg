@@ -1,0 +1,493 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="adobe">
+
+  <gazebo>
+    <plugin name = "gazebo_ros_control" filename = "libgazebo_ros_control.so">
+      <robotNamespace>/adobe</robotNamespace>
+    </plugin>
+  </gazebo>
+
+  <link name="fixed_link"/>
+
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="-0.011118 0.00085433 0.051815"
+        rpy="0 0 0" />
+      <mass
+        value="0.61219" />
+      <inertia
+        ixx="0.00059216"
+        ixy="-4.1263E-07"
+        ixz="2.2537E-07"
+        iyy="0.00063472"
+        iyz="3.3453E-08"
+        izz="0.0012076" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_model/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_model/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <gazebo reference = "base_link">
+    <kp>100000.0</kp>
+    <kd>100000.0</kd>
+    <mu1>1</mu1>
+    <mu2>0.5</mu2>
+  </gazebo>
+  <!-- This is the joint description for the fixed link and base -->
+  <joint name = "base_joint" type = "fixed">
+    <parent link = "fixed_link"/>
+    <child link = "base_link"/>
+    <origin xyz = "0 0 0" rpy = "0 0 0"/>
+  </joint>
+
+  <link
+    name="rw_link">
+    <inertial>
+      <origin
+        xyz="1.8588E-08 -1.4083E-09 -0.018127"
+        rpy="0 0 0" />
+      <mass
+        value="0.16695" />
+      <inertia
+        ixx="6.7296E-05"
+        ixy="-2.4757E-11"
+        ixz="3.2351E-12"
+        iyy="6.7293E-05"
+        iyz="-2.5995E-13"
+        izz="0.00011321" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_model/meshes/rw_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_model/meshes/rw_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <gazebo reference = "rw_link">
+    <kp>100000.0</kp>
+    <kd>100000.0</kd>
+    <mu1>10</mu1>
+    <mu2>5</mu2>
+  </gazebo>
+  
+  <joint
+    name="rw_joint"
+    type="continuous">
+    <origin
+      xyz="-0.031704 -0.05133 0.01125"
+      rpy="1.5708 -0.0050356 -3.1329" />
+    <parent
+      link="base_link" />
+    <child
+      link="rw_link" />
+    <axis
+      xyz="0 0 -1" />
+  </joint>
+
+  <transmission name = "tran_rw">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name = "rw_joint">
+      <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+    </joint>
+    <actuator name = "motor_rw">
+      <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <link
+    name="lw_link">
+    <inertial>
+      <origin
+        xyz="-6.913E-09 1.7315E-08 0.018127"
+        rpy="0 0 0" />
+      <mass
+        value="0.16695" />
+      <inertia
+        ixx="6.7293E-05"
+        ixy="-1.087E-09"
+        ixz="1.2352E-12"
+        iyy="6.7296E-05"
+        iyz="-2.9544E-12"
+        izz="0.00011321" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_model/meshes/lw_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_model/meshes/lw_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <gazebo reference = "lw_link">
+    <kp>100000.0</kp>
+    <kd>100000.0</kd>
+    <mu1>10</mu1>
+    <mu2>5</mu2>
+  </gazebo>
+
+  <joint
+    name="lw_joint"
+    type="continuous">
+    <origin
+      xyz="-0.032594 0.05077 0.01125"
+      rpy="1.5708 -0.0050356 -3.1329" />
+    <parent
+      link="base_link" />
+    <child
+      link="lw_link" />
+    <axis
+      xyz="0 0 -1" />
+  </joint>
+
+  <transmission name = "tran_lw">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name = "lw_joint">
+      <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+    </joint>
+    <actuator name = "motor_lw">
+      <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <link
+    name="roll_b_link">
+    <inertial>
+      <origin
+        xyz="0 1.0842E-19 -1.7347E-18"
+        rpy="0 0 0" />
+      <mass
+        value="0.0025724" />
+      <inertia
+        ixx="7.4344E-08"
+        ixy="2.0195E-28"
+        ixz="7.294E-26"
+        iyy="7.4344E-08"
+        iyz="-1.034E-25"
+        izz="7.4344E-08" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <sphere radius = "0.00001"/>
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    
+  </link>
+  <joint
+    name="roll_b_joint"
+    type="continuous">
+    <origin
+      xyz="0.073997 0.00064527 -0.014"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="roll_b_link" />
+    <axis
+      xyz="-0.99999 0 0.0049784" />
+  </joint>
+  <link
+    name="pitch_b_link">
+    <inertial>
+      <origin
+        xyz="0 1.0842E-19 -1.7347E-18"
+        rpy="0 0 0" />
+      <mass
+        value="0.0025724" />
+      <inertia
+        ixx="7.4344E-08"
+        ixy="2.0195E-28"
+        ixz="7.294E-26"
+        iyy="7.4344E-08"
+        iyz="-1.034E-25"
+        izz="7.4344E-08" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <sphere radius = "0.00001"/>
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+  </link>
+  <joint
+    name="pitch_b_joint"
+    type="continuous">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="roll_b_link" />
+    <child
+      link="pitch_b_link" />
+    <axis
+      xyz="-3.2736E-05 0.99998 -0.0065754" />
+  </joint>
+
+  
+
+  <link
+    name="yaw_b_link">
+    <inertial>
+      <origin
+        xyz="0 1.0842E-19 -1.7347E-18"
+        rpy="0 0 0" />
+      <mass
+        value="0.0025724" />
+      <inertia
+        ixx="7.4344E-08"
+        ixy="2.0195E-28"
+        ixz="7.294E-26"
+        iyy="7.4344E-08"
+        iyz="-1.034E-25"
+        izz="7.4344E-08" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_model/meshes/b_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_model/meshes/b_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <gazebo reference = "yaw_b_link">
+    <kp>100000.0</kp>
+    <kd>100000.0</kd>
+    <mu1>10</mu1>
+    <mu2>5</mu2>
+  </gazebo>
+
+  <joint
+    name="yaw_b_joint"
+    type="continuous">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="pitch_b_link" />
+    <child
+      link="yaw_b_link" />
+    <axis
+      xyz="0.0049783 0.0065755 0.99997" />
+  </joint>
+
+
+
+  <link
+    name="camera_link">
+    <inertial>
+      <origin
+        xyz="-0.015796 -0.00014623 -0.0089908"
+        rpy="0 0 0" />
+      <mass
+        value="0.094471" />
+      <inertia
+        ixx="4.6689E-05"
+        ixy="1.6199E-07"
+        ixz="-5.7183E-06"
+        iyy="2.713E-05"
+        iyz="-4.2658E-08"
+        izz="4.234E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_model/meshes/camera_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.10196 0.10196 0.10196 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_model/meshes/camera_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <gazebo reference = "camera_link">
+    <kp>100000.0</kp>
+    <kd>100000.0</kd>
+    <mu1>10.0</mu1>
+    <mu2>10.0</mu2>
+  </gazebo>
+
+  <joint
+    name="camera_joint"
+    type="fixed">
+    <origin
+      xyz="0.099844 0.00087066 0.101"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="camera_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+
+  <link
+    name="lidar_link">
+    <inertial>
+      <origin
+        xyz="0.012054 -0.00042336 -0.028765"
+        rpy="0 0 0" />
+      <mass
+        value="0.073082" />
+      <inertia
+        ixx="1.9582E-05"
+        ixy="-1.4369E-07"
+        ixz="-4.2842E-07"
+        iyy="2.4124E-05"
+        iyz="5.6523E-09"
+        izz="4.1419E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_model/meshes/lidar_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_model/meshes/lidar_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <gazebo reference = "lidar_link">
+    <kp>100000.0</kp>
+    <kd>100000.0</kd>
+    <mu1>10.0</mu1>
+    <mu2>10.0</mu2>
+  </gazebo>
+
+  <joint
+    name="lidar_joint"
+    type="fixed">
+    <origin
+      xyz="1.037E-05 0 0.1865"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="lidar_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+</robot>

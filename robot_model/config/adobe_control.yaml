@@ -1,0 +1,15 @@
+adobe:
+  # Publish all joint states ---------------------------
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 50
+
+  # Velocity Controllers --------------------------------
+  rw_joint_velocity_controller:
+    type: velocity_controllers/JointVelocityController
+    joint: rw_joint
+    pid: {p: 1, i: 0.01, d: 0}
+  lw_joint_velocity_controller:
+    type: velocity_controllers/JointVelocityController
+    joint: lw_joint
+    pid: {p: 1, i: 0.01, d: 0}
