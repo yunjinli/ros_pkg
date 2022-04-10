@@ -1,0 +1,59 @@
+#! /usr/bin/env python
+import rospy
+from geometry_msgs.msg import Twist
+from std_msgs.msg import Float64
+import numpy as np
+from diff_drive_controller.diff_drive_model import DiffDriveModel
+
+
+class DiffDriveControllerNode:
+
+    def __init__(self):
+        self.linear_vel = 0.0
+        self.angular_vel = 0.0
+        self.diff_drive_model = DiffDriveModel()
+        self.lw_pub = rospy.Publisher('left_wheel_cmd',
+                                       Float64, queue_size=1)
+        self.rw_pub = rospy.Publisher('right_wheel_cmd',
+                                        Float64, queue_size=1)
+        self.cmd_vel_sub = rospy.Subscriber("cmd_vel", Twist, self.callback)
+        self.rate = rospy.Rate(1)
+        self.wheel_diameter = float(rospy.get_param('~wheel_diameter', 0.0667))
+        self.wheel_seperation = float(rospy.get_param('~wheel_seperation', 0.18))
+        self.linear_vel_limit = float(rospy.get_param('~linear_vel_limit', 0.2))
+        self.angular_vel_limit = float(rospy.get_param('~angular_vel_limit', 0.5))
+        self.diff_drive_model.set_wheel_seperation(self.wheel_seperation)
+        self.diff_drive_model.set_wheel_diameter(self.wheel_diameter)
+        self.lw_cmd = Float64()
+        self.rw_cmd = Float64()
+
+    def publish_cmd(self):
+        self.lw_cmd.data, self.rw_cmd.data = self.diff_drive_model.compute_wheel_velocity(self.linear_vel, self.angular_vel)
+        self.lw_pub.publish(self.lw_cmd)
+        self.rw_pub.publish(self.rw_cmd)
+
+    def callback(self, twist):
+        self.linear_vel = twist.linear.x
+        self.angular_vel = twist.angular.z
+        if self.linear_vel > self.linear_vel_limit:
+            self.linear_vel = self.linear_vel_limit
+        if self.linear_vel < self.linear_vel_limit * -1:
+            self.linear_vel = self.linear_vel_limit * -1
+        if self.angular_vel > self.angular_vel_limit:
+            self.angular_vel = self.angular_vel_limit
+        if self.angular_vel < self.angular_vel_limit * -1:
+            self.angular_vel = self.angular_vel_limit * -1 
+
+if __name__ == '__main__':
+    try:
+        rospy.init_node('diff_drive_controller')
+        rospy.loginfo("{0} started".format(rospy.get_name()))
+        diff_drive_controller = DiffDriveControllerNode()
+
+        while not rospy.is_shutdown():
+            diff_drive_controller.publish_cmd()
+            diff_drive_controller.rate.sleep()
+        # node = ControllerNode()
+        # node.main()
+    except rospy.ROSInterruptException:
+        pass
