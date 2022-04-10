@@ -1,0 +1,24 @@
+<launch>
+    <include file = "$(find usb_cam)/launch/usb_cam-test.launch"/>
+    <arg name="wheel_diameter" value="0.0667" />
+    <arg name="wheel_separation" value="0.18" />
+
+    <node name="serial_node"        pkg="rosserial_arduino"      type="serial_node.py">
+        <param name="port"              type="string"               value="/dev/ttyACM0"/>
+        <param name="baud"              type="int"                  value="57600"/>
+    </node>
+
+    <node name="diff_drive_controller" pkg="diff_drive_controller" type="diff_drive_controller">
+        <rosparam subst_value="true">
+            wheel_diameter: $(arg wheel_diameter)
+            wheel_separation: $(arg wheel_separation)
+            linear_vel_limit: 0.2
+            angular_vel_limit: 1
+        </rosparam>
+    </node>
+
+    <node name="line_following_node" pkg="vision_pkg" type="line_follower.py">  
+        <remap from="/cmd_vel" to="/cmd_vel"/>
+        <remap from="/usb_cam/image_raw" to="/usb_cam/image_raw"/>
+    </node>
+</launch>
