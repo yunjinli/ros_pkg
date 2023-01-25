@@ -16,9 +16,11 @@
             angular_vel_limit: 1
         </rosparam>
     </node>
-
+    <node name="diff_drive_odometry" pkg="diff_drive_controller" type="diff_drive_odometry">
+    </node>
     <node name="line_following_node" pkg="vision_pkg" type="line_follower.py">  
         <remap from="/cmd_vel" to="/cmd_vel"/>
         <remap from="/usb_cam/image_raw" to="/usb_cam/image_raw"/>
     </node>
+    <node name = "rviz" pkg = "rviz" type = "rviz" args = "-d $(find diff_drive_controller)/rviz_config/config.rviz" />
 </launch>

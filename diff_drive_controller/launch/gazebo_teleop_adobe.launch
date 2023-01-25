@@ -1,0 +1,26 @@
+<launch>
+    <arg name="wheel_diameter" value="0.0667" />
+    <arg name="wheel_separation" value="0.18" />
+
+    <node name="diff_drive_controller" pkg="diff_drive_controller" type="diff_drive_controller">
+        <rosparam subst_value="true">
+            wheel_diameter: $(arg wheel_diameter)
+            wheel_separation: $(arg wheel_separation)
+            linear_vel_limit: 0.2
+            angular_vel_limit: 1
+        </rosparam>
+        <remap from="left_wheel_cmd" to="/adobe/lw_joint_velocity_controller/command"/>
+        <remap from="right_wheel_cmd" to="/adobe/rw_joint_velocity_controller/command"/>
+    </node>
+
+    <node name="joint_state_to_wheel_info_publisher" pkg="diff_drive_controller" type="sim_joint_state_to_wheel_info_publisher">
+    </node>
+    <node name="diff_drive_odometry" pkg="diff_drive_controller" type="diff_drive_odometry">
+    </node>
+    <node name="teleop" pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py">
+        <remap from="/cmd_vel" to="/cmd_vel"/>
+    </node>
+    <!--Show in Rviz-->
+    <!-- <node name = "rviz" pkg = "rviz" type = "rviz" args = "" /> -->
+    <node name = "rviz" pkg = "rviz" type = "rviz" args = "-d $(find diff_drive_controller)/rviz_config/config.rviz" />
+</launch>

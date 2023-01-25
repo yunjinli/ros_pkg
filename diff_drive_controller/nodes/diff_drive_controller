@@ -17,7 +17,7 @@ class DiffDriveControllerNode:
         self.rw_pub = rospy.Publisher('right_wheel_cmd',
                                         Float64, queue_size=1)
         self.cmd_vel_sub = rospy.Subscriber("cmd_vel", Twist, self.callback)
-        self.rate = rospy.Rate(1)
+        self.rate = rospy.Rate(10)
         self.wheel_diameter = float(rospy.get_param('~wheel_diameter', 0.0667))
         self.wheel_seperation = float(rospy.get_param('~wheel_seperation', 0.18))
         self.linear_vel_limit = float(rospy.get_param('~linear_vel_limit', 0.2))

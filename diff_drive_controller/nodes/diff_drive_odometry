@@ -1,0 +1,102 @@
+#! /usr/bin/env python
+import rospy
+from geometry_msgs.msg import Quaternion
+from geometry_msgs.msg import Twist
+from nav_msgs.msg import Odometry
+from robot_model.msg import wheelInfo
+from geometry_msgs.msg import PoseWithCovarianceStamped
+from tf.broadcaster import TransformBroadcaster
+from tf.transformations import quaternion_from_euler, euler_from_quaternion
+from math import sin, cos
+from diff_drive_controller.odometry import Pose
+from diff_drive_controller.odometry import Odometry as odometry
+
+class OdometryNode:
+
+    def __init__(self):
+        self.odometry = odometry()
+        self.wheel_state = wheelInfo()
+        
+    def main(self):
+        self.odom_pub = rospy.Publisher('odom', Odometry, queue_size=10)
+        self.tf_pub = TransformBroadcaster()
+
+        rospy.init_node('diff_drive_odometry')
+        self.nodeName = rospy.get_name()
+        rospy.loginfo("{0} started".format(self.nodeName))
+
+        rospy.Subscriber("wheel_state", wheelInfo, self.callback)
+        rospy.Subscriber("initial_pose", PoseWithCovarianceStamped,
+                         self.on_initial_pose)
+
+        self.wheel_diameter = float(rospy.get_param('~wheel_diameter', 0.0667))
+        self.wheel_seperation = float(rospy.get_param('~wheel_seperation', 0.18))
+        self.rate = float(rospy.get_param('~rate', 10.0))
+        self.base_frame_id = rospy.get_param('~base_frame_id', 'fixed_link')
+        self.odom_frame_id = rospy.get_param('~odom_frame_id', 'odom')
+
+        self.odometry.set_wheel_seperation(self.wheel_seperation)
+        self.odometry.set_wheel_diameter(self.wheel_diameter)
+        
+        self.odometry.set_time(rospy.get_time())
+
+        rate = rospy.Rate(self.rate)
+        while not rospy.is_shutdown():
+            self.publish()
+            rate.sleep()
+
+    def publish(self):
+        self.odometry.update(rospy.get_time())
+        now = rospy.get_rostime()
+        pose = self.odometry.get_pose()
+
+        q = quaternion_from_euler(0, 0, pose.theta)
+        self.tf_pub.sendTransform(
+            (pose.x, pose.y, 0),
+            (q[0], q[1], q[2], q[3]),
+            now,
+            self.base_frame_id,
+            self.odom_frame_id
+        )
+
+        odom = Odometry()
+        odom.header.stamp = now
+        odom.header.frame_id = self.odom_frame_id
+        odom.child_frame_id = self.base_frame_id
+        odom.pose.pose.position.x = pose.x
+        odom.pose.pose.position.y = pose.y
+        odom.pose.pose.orientation.x = q[0]
+        odom.pose.pose.orientation.y = q[1]
+        odom.pose.pose.orientation.z = q[2]
+        odom.pose.pose.orientation.w = q[3]
+        odom.twist.twist.linear.x = pose.x_dot
+        odom.twist.twist.angular.z = pose.theta_dot
+        self.odom_pub.publish(odom)
+
+    def on_initial_pose(self, msg):
+        q = [msg.pose.pose.orientation.x,
+             msg.pose.pose.orientation.x,
+             msg.pose.pose.orientation.x,
+             msg.pose.pose.orientation.w]
+        roll, pitch, yaw = euler_from_quaternion(q)
+
+        pose = Pose()
+        pose.x = msg.pose.pose.position.x
+        pose.y = msg.pose.pose.position.y
+        pose.theta = yaw
+
+        rospy.loginfo('Setting initial pose to %s', pose)
+        self.odometry.set_pose(pose)
+
+    def callback(self, msg):
+        self.wheel_state = msg
+        self.odometry.read_left_encoder(self.wheel_state.lwPos)
+        self.odometry.read_right_encoder(self.wheel_state.rwPos)
+
+
+if __name__ == '__main__':
+    try:
+        node = OdometryNode()
+        node.main()
+    except rospy.ROSInterruptException:
+        pass
